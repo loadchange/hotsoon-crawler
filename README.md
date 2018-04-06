@@ -76,7 +76,7 @@ python hotsoon-video-ripper.py 火山号1,火山号2
 帮你找回丢失的或者删除的视频.
 
 然后重新运行下载命令.
-<p align="center"><img src="https://raw.githubusercontent.com/loadchange/hotsoon-crawler/master/end-of-run.jpg" width="800"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/loadchange/hotsoon-crawler/master/end-of-run.png" width="800"></p>
 
 ## 喜欢就打赏吧!
 
