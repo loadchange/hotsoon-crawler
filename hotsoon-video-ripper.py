@@ -160,57 +160,55 @@ class CrawlerScheduler(object):
 
     def _download_user_media(self, number):
 
-        while True:
-            user_info = self._search(number)
-            if not user_info:
-                print("Number %s does not exist" % number)
-                break
-            user_info = user_info.get('user')
-            user_id = str(user_info.get('id'))
-            current_folder = os.getcwd()
-            target_folder = os.path.join(current_folder, 'download/%s' % user_id)
-            if not os.path.isdir(target_folder):
-                os.mkdir(target_folder)
-            _create_user_info_file(target_folder, user_info, number)
+        user_info = self._search(number)
+        if not user_info:
+            print("Number %s does not exist" % number)
+            return
+        user_info = user_info.get('user')
+        user_id = str(user_info.get('id'))
+        current_folder = os.getcwd()
+        target_folder = os.path.join(current_folder, 'download/%s' % user_id)
+        if not os.path.isdir(target_folder):
+            os.mkdir(target_folder)
+        _create_user_info_file(target_folder, user_info, number)
 
-            video_list = []
-            user_video_url = "https://reflow.huoshan.com/share/load_videos/?{0}"
-            user_video_params = {
-                'user_id': user_id,
-                'count': '21'
-            }
+        video_list = []
+        user_video_url = "https://reflow.huoshan.com/share/load_videos/?{0}"
+        user_video_params = {
+            'user_id': user_id,
+            'count': '21'
+        }
 
-            def get_video_list(offset=0, max_time=None):
-                user_video_params['offset'] = str(offset)
-                if max_time:
-                    user_video_params['max_time'] = str(max_time)
-                url = user_video_url.format('&'.join([key + '=' + user_video_params[key] for key in user_video_params]))
-                res = requests.get(url, headers=self.headers)
-                contentJson = json.loads(res.content.decode('utf-8'))
-                for video in contentJson.get('data', {}).get('items', []):
-                    video_list.append(video)
-                extra = contentJson.get('extra')
-                if extra.get('has_more'):
-                    get_video_list(offset + 21, extra.get('max_time'))
+        def get_video_list(offset=0, max_time=None):
+            user_video_params['offset'] = str(offset)
+            if max_time:
+                user_video_params['max_time'] = str(max_time)
+            url = user_video_url.format('&'.join([key + '=' + user_video_params[key] for key in user_video_params]))
+            res = requests.get(url, headers=self.headers)
+            contentJson = json.loads(res.content.decode('utf-8'))
+            for video in contentJson.get('data', {}).get('items', []):
+                video_list.append(video)
+            extra = contentJson.get('extra')
+            if extra.get('has_more'):
+                get_video_list(offset + 21, extra.get('max_time'))
 
-            get_video_list()
+        get_video_list()
 
-            if len(video_list) == 0:
-                print("There's no video in number %s." % number)
-                break
+        if len(video_list) == 0:
+            print("There's no video in number %s." % number)
+            return
 
-            print("\nHotsoon number %s, video number %d\n\n" % (number, len(video_list)))
+        print("\nHotsoon number %s, video number %d\n\n" % (number, len(video_list)))
 
-            try:
-                for item in video_list:
-                    uri = item['video']['uri']
-                    self.queue.put((uri, target_folder))
-                break
-            except KeyError:
-                break
-            except UnicodeDecodeError:
-                print("Cannot decode response data from URL %s" % user_video_url)
-                continue
+        try:
+            for item in video_list:
+                uri = item['video']['uri']
+                self.queue.put((uri, target_folder))
+        except KeyError:
+            return
+        except UnicodeDecodeError:
+            print("Cannot decode response data from URL %s" % user_video_url)
+            return
 
 
 def usage():

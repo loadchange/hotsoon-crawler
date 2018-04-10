@@ -5,7 +5,7 @@ hotsoon-crawler
 
 ## 怎么样方便地讨论交流
 
-* 或者直接在[Github](https://github.com/loadchange/hotsoon-crawler/issues/new)上开新的issue;
+* 直接在[Github](https://github.com/loadchange/hotsoon-crawler/issues/new)上开新的issue;
 
 ## 环境安装
 
