@@ -2,9 +2,9 @@
 
 import os
 import sys
+import codecs
 
 import requests
-import time
 from six.moves import queue as Queue
 from threading import Thread
 import json
@@ -17,14 +17,6 @@ RETRY = 5
 
 # Numbers of downloading threads concurrently
 THREADS = 10
-
-
-def _create_user_info_file(folder, user_info, nickname):
-    txtName = folder + '/user_info.json'
-    f = open(txtName, "a+")
-    f.write('\r\n%s\r\n' % nickname)
-    f.write(json.dumps(user_info, sort_keys=True, indent=2))
-    f.close()
 
 
 class DownloadWorker(Thread):
@@ -170,7 +162,6 @@ class CrawlerScheduler(object):
         target_folder = os.path.join(current_folder, 'download/%s' % user_id)
         if not os.path.isdir(target_folder):
             os.mkdir(target_folder)
-        _create_user_info_file(target_folder, user_info, number)
 
         video_list = []
         user_video_url = "https://reflow.huoshan.com/share/load_videos/?{0}"
@@ -222,23 +213,19 @@ def usage():
     print(u"未找到user-number.txt文件，请创建.\n"
           u"请在文件中指定火山号，并以 逗号/空格/tab/表格鍵/回车符 分割，支持多行.\n"
           u"保存文件并重试.\n\n"
-          u"例子: 抖音号1,抖音号2\n\n"
+          u"例子: 火山号1,火山号2\n\n"
           u"或者直接使用命令行参数指定站点\n"
           u"例子: python hotsoon-video-ripper.py 火山号1,火山号2")
 
 
 def parse_sites(fileName):
     with open(fileName, "rb") as f:
-        raw_sites = f.read().rstrip().lstrip()
-
-    raw_sites = raw_sites.replace("\t", ",") \
-        .replace("\r", ",") \
-        .replace("\n", ",") \
-        .replace(" ", ",")
-    raw_sites = raw_sites.split(",")
-
+        txt = f.read().rstrip().lstrip()
+        txt = codecs.decode(txt, 'utf-8')
+        txt = txt.replace("\t", ",").replace("\r", ",").replace("\n", ",").replace(" ", ",")
+        txt = txt.split(",")
     numbers = list()
-    for raw_site in raw_sites:
+    for raw_site in txt:
         site = raw_site.lstrip().rstrip()
         if site:
             numbers.append(site)
