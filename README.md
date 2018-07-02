@@ -1,6 +1,8 @@
 hotsoon-crawler
 ===============
 
+> 请在Python3下运行
+
 这是一个[Python](https://www.python.org)的脚本,配置运行后可以从某些你指定的火山用户下载视频.
 
 ## 怎么样方便地讨论交流
@@ -10,8 +12,6 @@ hotsoon-crawler
 ## 环境安装
 
 #### 程序猿和程序媛见这里
-
-> 脚本可以运行在 2.7 和 3.5 的 Python 环境下。
 
 配置好你的Python环境,然后`pip install requests `.
 
